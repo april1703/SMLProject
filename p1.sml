@@ -1,5 +1,5 @@
 (*
-Name: April Gauthreaux
+Name: April Gauthreaux and Sadie Sanders
 Date: 01/17/2025
 Description: Project 1 - ML Mini Parser
 *)
