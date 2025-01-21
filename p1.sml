@@ -19,12 +19,22 @@ datatype token = EQ | PL | MI | TI | DI | ID of string;
 4. write to output file
 *)
 
+(*reads each line of a file (april)*)
 fun readLines instream = 
     case TextIO.inputLine instream of 
         SOME line => line :: readLines instream
         | NONE => [];
 
-fun parse (input, output) = 
-    val instream =TextIO.openIn input;
-    val lines = readLines instream
+(*returns a string list of file (sadie)*)   
+fun parse (input) = 
+let
+    val instream = TextIO.openIn input;
+    val text = readLines instream;
     val _ = TextIO.closeIn instream;
+    fun tokenise nil = nil
+    |   tokenise (x:: xs) = [(String.tokens (fn c => c = #"\n") x)] @ tokenise(xs)
+in
+    tokenise(text)
+end;
+parse("input");
+
