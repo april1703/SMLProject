@@ -29,6 +29,10 @@ let
         SOME line => line :: readLines instream
         | NONE => [];
 
+    (* push exploded string list list into function one string list at a time -sadie*)
+    fun explodeStringLists ( _, nil ) = nil
+    |   explodeStringLists (f, (x :: xs)) = implode(f(explode(x))) :: explodeStringLists(f, xs);
+
     (* potential checking function partially worked on *)
     (* 
         if (ord(x)>=97 andalso ord(x)<=122) orelse (ord(x)>=65 andalso ord(x) <=90) orelse (ord(x)>=48 andalso ord(x) <= 57)
@@ -36,19 +40,14 @@ let
         else false;
     *)
 
-    (* HELPER: add whitespace before and after valid special symbols -sadie *)
-    fun addwsBACK nil = nil
-        (* check for valid symbols, add whitespace *)
-    |   addwsBACK (#"=" :: xs) = [#" ", #"=", #" "] @ addwsBACK(xs)
-    |   addwsBACK (#"+" :: xs) = [#" ", #"+", #" "] @ addwsBACK(xs)
-    |   addwsBACK (#"-" :: xs) = [#" ", #"-", #" "] @ addwsBACK(xs)
-    |   addwsBACK (#"*" :: xs) = [#" ", #"*", #" "] @ addwsBACK(xs)
-    |   addwsBACK (#"/" :: xs) = [#" ", #"/", #" "] @ addwsBACK(xs)
-    |   addwsBACK (x :: xs) = x :: addwsBACK(xs);
-
-    (* push string list list one list at a time -sadie*)
+    (* add whitespace before and after valid special symbols -sadie *)
     fun addwhitespace nil = nil
-    |   addwhitespace (x :: xs) = implode(addwsBACK(explode(x))) :: xs;
+    |   addwhitespace (#"=" :: xs) = [#" ", #"=", #" "] @ addwhitespace(xs)
+    |   addwhitespace (#"+" :: xs) = [#" ", #"+", #" "] @ addwhitespace(xs)
+    |   addwhitespace (#"-" :: xs) = [#" ", #"-", #" "] @ addwhitespace(xs)
+    |   addwhitespace (#"*" :: xs) = [#" ", #"*", #" "] @ addwhitespace(xs)
+    |   addwhitespace (#"/" :: xs) = [#" ", #"/", #" "] @ addwhitespace(xs)
+    |   addwhitespace (x :: xs) = x :: addwhitespace(xs);
 
     (* tokenise the separate strings -sadie*)
     fun removewhitespace nil = nil
@@ -62,7 +61,7 @@ let
 in
     (* 1. read file (done in variable step so file can be closed properly) *)
 
-    removewhitespace(addwhitespace(text)) (* 2. tokenise the string lists *)
+    removewhitespace(explodeStringLists(addwhitespace, text)) (* 2. tokenise the string lists *)
 
     (* 3. parse through the tokens, replace when necessary *)
 
