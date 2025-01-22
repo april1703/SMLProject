@@ -4,8 +4,6 @@ Date: 01/17/2025
 Description: Project 1 - ML Mini Parser
 *)
 
-open TextIO;
-
 (*String.tokens;*)
 
 datatype token = EQ | PL | MI | TI | DI | ID of string;
@@ -20,21 +18,55 @@ datatype token = EQ | PL | MI | TI | DI | ID of string;
 *)
 
 (*reads each line of a file (april)*)
-fun readLines instream = 
+
+
+(*returns a string list of file (sadie)*)   
+fun getinput (input) = 
+let 
+    fun readLines instream = 
+    (* read file to each newline, return string list list *)
     case TextIO.inputLine instream of 
         SOME line => line :: readLines instream
         | NONE => [];
 
-(*returns a string list of file (sadie)*)   
-fun parse (input) = 
-let
+    (* potential checking function partially worked on *)
+    (* 
+        if (ord(x)>=97 andalso ord(x)<=122) orelse (ord(x)>=65 andalso ord(x) <=90) orelse (ord(x)>=48 andalso ord(x) <= 57)
+        then true
+        else false;
+    *)
+
+    (* HELPER: add whitespace before and after valid special symbols -sadie *)
+    fun addwsBACK nil = nil
+        (* check for valid symbols, add whitespace *)
+    |   addwsBACK (#"=" :: xs) = [#" ", #"=", #" "] @ addwsBACK(xs)
+    |   addwsBACK (#"+" :: xs) = [#" ", #"+", #" "] @ addwsBACK(xs)
+    |   addwsBACK (#"-" :: xs) = [#" ", #"-", #" "] @ addwsBACK(xs)
+    |   addwsBACK (#"*" :: xs) = [#" ", #"*", #" "] @ addwsBACK(xs)
+    |   addwsBACK (#"/" :: xs) = [#" ", #"/", #" "] @ addwsBACK(xs)
+    |   addwsBACK (x :: xs) = x :: addwsBACK(xs);
+
+    (* push string list list one list at a time -sadie*)
+    fun addwhitespace nil = nil
+    |   addwhitespace (x :: xs) = implode(addwsBACK(explode(x))) :: xs;
+
+    (* tokenise the separate strings -sadie*)
+    fun removewhitespace nil = nil
+    |   removewhitespace ( x:: xs) = 
+        [(String.tokens (fn c => c = #" ") (String.substring(x, 0, String.size(x)-1)))] @ removewhitespace(xs);
+
+    (* VARIABLES *)
     val instream = TextIO.openIn input;
     val text = readLines instream;
     val _ = TextIO.closeIn instream;
-    fun tokenise nil = nil
-    |   tokenise (x:: xs) = [(String.tokens (fn c => c = #"\n") x)] @ tokenise(xs)
 in
-    tokenise(text)
-end;
-parse("input");
+    (* 1. read file (done in variable step so file can be closed properly) *)
 
+    removewhitespace(addwhitespace(text)) (* 2. tokenise the string lists *)
+
+    (* 3. parse through the tokens, replace when necessary *)
+
+    (* 4. write to output file *)
+
+end;
+getinput("input");
