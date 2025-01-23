@@ -1,25 +1,13 @@
 (*
-Name: April Gauthreaux and Sadie Sanders
+Names: April Gauthreaux and Sadie Sanders
+Emails: ajg044@email.latech.edu, sas111@email.latech.edu
 Date: 01/17/2025
-Description: Project 1 - ML Mini Parser
+Course: CSC 330 002
+Quarter: Winter 2025 
+Project 1 - ML Mini Parser
 *)
-
-(*String.tokens;*)
-
 
 datatype token = EQ | PL | MI | TI | DI | ID of string;
-
-(* FLOW
-1. read line
-2. parse tokens in line
-3. check for incorrect tokens ie. @ # $ % ^
-    - if any, return false
-    - else, add to token array
-4. write to output file
-*)
-
-(*reads each line of a file (april)*)
-
 
 (*returns a string list of file (sadie)*)   
 fun getinput (input) = 
@@ -86,9 +74,18 @@ let
 
 
     (* HELPER FOR STEP 3 *)
-
+    
+    (*Converting the strings into token datatype - april *)
+    fun tokenise str = 
+        case str of "=" => EQ
+        | "+" => PL
+        | "-" => MI
+        | "*" => TI
+        | "/" => DI
+        | _ => ID str;
+    
     (* MAIN STEP 3 *)
-
+    fun step3 inputLists = List.map(fn inputList => List.map tokenise inputList) inputLists
 
     (* HELPER FOR STEP 4 *)
 
@@ -101,11 +98,11 @@ in
     (* 1. read file (done in variables so file can be closed properly) *)
 
     (* 2. tokenise file, throw error if invalid character*)
-    step2(text)
-
+   
+    
     (* 3. parse through the tokens, replace when necessary *)
-
+    step3(step2(text))
     (* 4. write to output file *)
 
 end;
-getinput("input");
+getinput(input);
