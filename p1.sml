@@ -7,27 +7,34 @@ Quarter: Winter 2025
 Project 1 - ML Mini Parser
 *)
 
+(*Flow:
+    1. read file 
+    2. tokenise file, throw error if invalid character
+    3. change datatype to tokens
+    4. write to output file
+*)
+
+
 datatype token = EQ | PL | MI | TI | DI | ID of string;
 
 (*returns a string list of file (sadie)*)   
-fun getinput (input) = 
+fun parse (input, output) = 
 let 
     fun readLines instream = 
     (* HELPER FOR STEP 1 *)
-
     (* read file to each newline, return string list list -april *)
     case TextIO.inputLine instream of 
         SOME line => (String.substring(line, 0, String.size(line)-1)) :: readLines instream
         | NONE => [];
     
     (* MAIN STEP 1 *)
-    val instream = TextIO.openIn input;
-    val text = readLines instream;
-    val _ = TextIO.closeIn instream;
+    val instream = TextIO.openIn(input);
+    val outstream = TextIO.openOut(output);
+    val text = readLines(instream);
+    (*val _ = TextIO.closeIn(instream);*)
     
 
     (* HELPER FOR STEP 2 *)
-
     (* reuseable function: push exploded string list list into function one string list at a time -sadie*)
     fun explodeAndFunction ( _, nil ) = nil
     |   explodeAndFunction (f, (x :: xs)) = implode(f(explode(x))) :: explodeAndFunction(f, xs);
@@ -49,7 +56,7 @@ let
     (* parse input from checkInvCHAR (turn into true/false) -sadie*)
     fun checkInvBOOL nil = true
     |   checkInvBOOL ("F" :: _) = false
-    |   checkInvBOOL ("T" :: xs) = checkInvBOOL(xs)
+    |   checkInvBOOL ("T" :: xs) = checkInvBOOL(xs);
 
     (* mini step: prep the file lines for tokenization *)
     (* add whitespace before and after valid special symbols -sadie *)
@@ -74,7 +81,6 @@ let
 
 
     (* HELPER FOR STEP 3 *)
-    
     (*Converting the strings into token datatype - april *)
     fun tokenise str = 
         case str of "=" => EQ
@@ -84,25 +90,39 @@ let
         | "/" => DI
         | _ => ID str;
     
-    (* MAIN STEP 3 *)
-    fun step3 inputLists = List.map(fn inputList => List.map tokenise inputList) inputLists
+    (* MAIN STEP 3 - april*)
+    (*Iterates over the lists to tokenise each string in list*)
+    fun step3 inputLists = List.map(fn singularList => List.map(tokenise(singularList))) inputLists;
 
-    (* HELPER FOR STEP 4 *)
+    (* HELPER FOR STEP 4 - april*)
+    (*Converting the tokens to string to write to output file*)
+    fun toString EQ = "EQ"
+    |   toString PL = "PL"
+    |   toString MI ="MI"
+    |   toString TI = "TI"
+    |   toString DI = "DI"
+    |   toString (ID str) = "ID " ^ str ^ "";
+
+    fun tokenToString tlist = 
+    let
+        let
+            val strs = map toString(tlist)
+        in
+            "[" ^ String.concatWith ", " strs ^ "]"
+        end;
+    in
+        String.concatWith("\n", map(strs, tlist))
+    end;
 
     (* MAIN STEP 4 *)
-
-
+    fun writeOut (outstream, result) = 
+        TextIO.output(outStream, result ^ "\n");
+    val result = tokenToString(step3(step2(text)));
 in
     (* MAIN FUNCTION *)
-
     (* 1. read file (done in variables so file can be closed properly) *)
-
     (* 2. tokenise file, throw error if invalid character*)
-   
-    
-    (* 3. parse through the tokens, replace when necessary *)
-    step3(step2(text))
+    (* 3. change datatype to token *)
     (* 4. write to output file *)
-
+    writeOut(outStream, result)
 end;
-getinput(input);
