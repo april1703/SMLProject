@@ -95,19 +95,27 @@ let
     fun step3 inputLists = List.map(fn singularList => List.map(tokenise(singularList))) inputLists;
 
     (* HELPER FOR STEP 4 - april*)
-    
-    fun writeToOut nil = nil
+    fun writeToOut nil = TextIO.output(outstream, "[]")
     | writeToOut(x::xs) = 
         let 
             fun innerLists [] = ()
-            | innerLists (y :: ys) =
+            | innerLists [y] =  (* Handle the last token without adding a trailing comma *)
                 (case y of
-                EQ => TextIO.output(outstream, "EQ")
-                | PL => TextIO.output(outstream, "PL")
-                | MI => TextIO.output(outstream, "MI")
-                | TI => TextIO.output(outstream, "TI")
-                | DI => TextIO.output(outstream, "DI");
-            innerLists(ys));
+                   EQ => TextIO.output(outstream, "EQ")
+                 | PL => TextIO.output(outstream, "PL")
+                 | MI => TextIO.output(outstream, "MI")
+                 | TI => TextIO.output(outstream, "TI")
+                 | DI => TextIO.output(outstream, "DI")
+                 | ID str => TextIO.output(outstream, "ID " ^ "\"" ^ str ^ "\""))
+            | innerLists (y :: ys) =  (* Add a comma after the token *)
+                (case y of
+                   EQ => TextIO.output(outstream, "EQ, ")
+                 | PL => TextIO.output(outstream, "PL, ")
+                 | MI => TextIO.output(outstream, "MI, ")
+                 | TI => TextIO.output(outstream, "TI, ")
+                 | DI => TextIO.output(outstream, "DI, ")
+                 | ID str => TextIO.output(outstream, "ID " ^ "\"" ^ str ^ "\", ");
+                 innerLists(ys));
             
         in
             TextIO.output(outstream, "[");
@@ -115,15 +123,15 @@ let
             TextIO.output(outstream, "]" ^ "\n");
             writeToOut(xs)
         end;
-    
-    val result = step2(text);
-    val result2 = writeToOut(result);
     (* MAIN STEP 4 *)
+    
 in
     (* MAIN FUNCTION *)
     (* 1. read file (done in variables so file can be closed properly) *)
     (* 2. tokenise file, throw error if invalid character*)
     (* 3. change datatype to token *)
     (* 4. write to output file *)
+    writeToOut(step3(step2(text)));
+    TextIO.closeOut(outstream);
     step3(step2(text))
 end;
