@@ -105,24 +105,26 @@ let
 
     fun tokenToString tlist = 
     let
-        let
-            val strs = map toString(tlist)
-        in
-            "[" ^ String.concatWith ", " strs ^ "]"
-        end;
+        val strs = map toString(tlist);
     in
-        String.concatWith("\n", map(strs, tlist))
+        "[" ^ String.concatWith ", " strs ^ "]" 
     end;
+    fun strList slist = 
+    let
+        val lines = map tokenToString slist;
+    in
+        String.concatWith "\n" lines
+    end
 
     (* MAIN STEP 4 *)
     fun writeOut (outstream, result) = 
-        TextIO.output(outStream, result ^ "\n");
-    val result = tokenToString(step3(step2(text)));
+        TextIO.output(outstream, result ^ "\n");
+    val result = strList(step3(step2(text)));
 in
     (* MAIN FUNCTION *)
     (* 1. read file (done in variables so file can be closed properly) *)
     (* 2. tokenise file, throw error if invalid character*)
     (* 3. change datatype to token *)
     (* 4. write to output file *)
-    writeOut(outStream, result)
+    writeOut(outstream, result)
 end;
