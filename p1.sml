@@ -96,26 +96,28 @@ let
 
     (* HELPER FOR STEP 4 - april*)
     
-    fun writeToOut [] = TextIO.output(outstream, "[]")
+    fun writeToOut nil = nil
     | writeToOut(x::xs) = 
         let 
-            
             fun innerLists [] = ()
             | innerLists (y :: ys) =
-                case y of
+                (case y of
                 EQ => TextIO.output(outstream, "EQ")
                 | PL => TextIO.output(outstream, "PL")
                 | MI => TextIO.output(outstream, "MI")
                 | TI => TextIO.output(outstream, "TI")
-                | DI => TextIO.output(outstream, "DI")
-                innerLists ys;
+                | DI => TextIO.output(outstream, "DI");
+            innerLists(ys));
+            
         in
             TextIO.output(outstream, "[");
             innerLists(x);
             TextIO.output(outstream, "]" ^ "\n");
             writeToOut(xs)
         end;
-
+    
+    val result = step2(text);
+    val result2 = writeToOut(result);
     (* MAIN STEP 4 *)
 in
     (* MAIN FUNCTION *)
