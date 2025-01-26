@@ -92,7 +92,7 @@ let
     
     (* MAIN STEP 3 - april*)
     (*Iterates over the lists to tokenise each string in list*)
-    fun step3 inputLists = List.map(fn singularList => List.map(tokenise(singularList))) inputLists;
+   fun step3 inputLists = List.map(fn singularList => List.map tokenise singularList) inputLists;
 
     (* HELPER FOR STEP 4 - april*)
     fun writeToOut nil = TextIO.output(outstream, "[]")
