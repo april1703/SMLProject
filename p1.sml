@@ -17,7 +17,6 @@ Project 1 - ML Mini Parser
 
 datatype token = EQ | PL | MI | TI | DI | ID of string;
 
-(*returns a string list of file (sadie)*)   
 fun parse (input, output) = 
 let 
     fun readLines instream = 
@@ -77,7 +76,8 @@ let
     fun step2 filelist =
         if checkInvBOOL(explodeAndFunction(checkInvCHAR, filelist))
         then removewhitespace(explodeAndFunction(addwhitespace, filelist))
-        else [];
+        else (print("Invalid token"); []);
+    val step2list = step2(text);
 
 
     (* HELPER FOR STEP 3 *)
@@ -92,38 +92,40 @@ let
     
     (* MAIN STEP 3 - april*)
     (*Iterates over the lists to tokenise each string in list*)
-   fun step3 inputLists = List.map(fn singularList => List.map tokenise singularList) inputLists;
+    fun step3 inputLists = List.map(fn singularList => List.map tokenise singularList) inputLists;
+    val step3list = step3(step2list);
 
     (* HELPER FOR STEP 4 - april*)
-    fun writeToOut nil = TextIO.output(outstream, "[]")
-    | writeToOut(x::xs) = 
-        let 
-            fun innerLists [] = ()
-            | innerLists [y] =  (* Handle the last token without adding a trailing comma *)
-                (case y of
-                   EQ => TextIO.output(outstream, "EQ")
-                 | PL => TextIO.output(outstream, "PL")
-                 | MI => TextIO.output(outstream, "MI")
-                 | TI => TextIO.output(outstream, "TI")
-                 | DI => TextIO.output(outstream, "DI")
-                 | ID str => TextIO.output(outstream, "ID " ^ "\"" ^ str ^ "\""))
-            | innerLists (y :: ys) =  (* Add a comma after the token *)
-                (case y of
-                   EQ => TextIO.output(outstream, "EQ, ")
-                 | PL => TextIO.output(outstream, "PL, ")
-                 | MI => TextIO.output(outstream, "MI, ")
-                 | TI => TextIO.output(outstream, "TI, ")
-                 | DI => TextIO.output(outstream, "DI, ")
-                 | ID str => TextIO.output(outstream, "ID " ^ "\"" ^ str ^ "\", ");
-                 innerLists(ys));
-            
-        in
-            TextIO.output(outstream, "[");
-            innerLists(x);
-            TextIO.output(outstream, "]" ^ "\n");
-            writeToOut(xs)
-        end;
+    fun innerLists [] = ()
+    | innerLists [y] =  (* Handle the last token without adding a trailing comma *)
+        (case y of
+            EQ => TextIO.output(outstream, "EQ")
+            | PL => TextIO.output(outstream, "PL")
+            | MI => TextIO.output(outstream, "MI")
+            | TI => TextIO.output(outstream, "TI")
+            | DI => TextIO.output(outstream, "DI")
+            | ID str => TextIO.output(outstream, "ID " ^ "\"" ^ str ^ "\""))
+    | innerLists (y :: ys) =  (* Add a comma after the token *)
+        (case y of
+            EQ => TextIO.output(outstream, "EQ, ")
+            | PL => TextIO.output(outstream, "PL, ")
+            | MI => TextIO.output(outstream, "MI, ")
+            | TI => TextIO.output(outstream, "TI, ")
+            | DI => TextIO.output(outstream, "DI, ")
+            | ID str => TextIO.output(outstream, "ID " ^ "\"" ^ str ^ "\", ");
+            innerLists(ys));
+
     (* MAIN STEP 4 *)
+    fun writeToOut [] = TextIO.output(outstream, "[]")
+    |   writeToOut (x :: nil) = 
+            (TextIO.output(outstream, "[");
+            innerLists(x);
+            TextIO.output(outstream, "]"))
+    | writeToOut (x :: xs) =
+      (TextIO.output(outstream, "[");
+       innerLists x;
+       TextIO.output(outstream, "]\n");
+       writeToOut xs);
     
 in
     (* MAIN FUNCTION *)
@@ -131,7 +133,9 @@ in
     (* 2. tokenise file, throw error if invalid character*)
     (* 3. change datatype to token *)
     (* 4. write to output file *)
-    writeToOut(step3(step2(text)));
+    writeToOut(step3list);
     TextIO.closeOut(outstream);
-    step3(step2(text))
+    step3list
 end;
+
+parse("input", "output");
