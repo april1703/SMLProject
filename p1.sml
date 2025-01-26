@@ -7,14 +7,6 @@ Quarter: Winter 2025
 Project 1 - ML Mini Parser
 *)
 
-(*Flow:
-    1. read file 
-    2. tokenise file, throw error if invalid character
-    3. change datatype to tokens
-    4. write to output file
-*)
-
-
 datatype token = EQ | PL | MI | TI | DI | ID of string;
 
 fun parse (input, output) = 
@@ -30,8 +22,6 @@ let
     val instream = TextIO.openIn(input);
     val outstream = TextIO.openOut(output);
     val text = readLines(instream);
-    (*val _ = TextIO.closeIn(instream);*)
-    
 
     (* HELPER FOR STEP 2 *)
     (* reuseable function: push exploded string list list into function one string list at a time -sadie*)
@@ -76,7 +66,7 @@ let
     fun step2 filelist =
         if checkInvBOOL(explodeAndFunction(checkInvCHAR, filelist))
         then removewhitespace(explodeAndFunction(addwhitespace, filelist))
-        else (print("Invalid token"); []);
+        else (print("Parse Error\n"); TextIO.stdOut; []);
     val step2list = step2(text);
 
 
@@ -137,5 +127,3 @@ in
     TextIO.closeOut(outstream);
     step3list
 end;
-
-parse("input", "output");
