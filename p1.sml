@@ -100,13 +100,20 @@ let
     | writeToOut(x::xs) = 
         let 
             
-            fun innerLists [] = nil
-            | innerLists (EQ :: ys) = TextIO.output(outstream, "EQ");
+            fun innerLists [] = ()
+            | innerLists (y :: ys) =
+                case y of
+                EQ => TextIO.output(outstream, "EQ")
+                | PL => TextIO.output(outstream, "PL")
+                | MI => TextIO.output(outstream, "MI")
+                | TI => TextIO.output(outstream, "TI")
+                | DI => TextIO.output(outstream, "DI")
+                innerLists ys;
         in
             TextIO.output(outstream, "[");
-            innerLists x;
-            TextIO.output(outstream, "]");
-            writeToOut xs
+            innerLists(x);
+            TextIO.output(outstream, "]" ^ "\n");
+            writeToOut(xs)
         end;
 
     (* MAIN STEP 4 *)
