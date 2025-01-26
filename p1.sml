@@ -56,7 +56,7 @@ let
     (* parse input from checkInvCHAR (turn into true/false) -sadie*)
     fun checkInvBOOL nil = true
     |   checkInvBOOL ("F" :: _) = false
-    |   checkInvBOOL ("T" :: xs) = checkInvBOOL(xs);
+    |   checkInvBOOL (_ :: xs) = checkInvBOOL(xs);
 
     (* mini step: prep the file lines for tokenization *)
     (* add whitespace before and after valid special symbols -sadie *)
