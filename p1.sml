@@ -95,36 +95,26 @@ let
     fun step3 inputLists = List.map(fn singularList => List.map(tokenise(singularList))) inputLists;
 
     (* HELPER FOR STEP 4 - april*)
-    (*Converting the tokens to string to write to output file*)
-    fun toString EQ = "EQ"
-    |   toString PL = "PL"
-    |   toString MI ="MI"
-    |   toString TI = "TI"
-    |   toString DI = "DI"
-    |   toString (ID str) = "ID " ^ str ^ "";
-
-    fun tokenToString tlist = 
-    let
-        val strs = map toString(tlist);
-    in
-        "[" ^ String.concatWith ", " strs ^ "]" 
-    end;
-    fun strList slist = 
-    let
-        val lines = map tokenToString slist;
-    in
-        String.concatWith "\n" lines
-    end
+    
+    fun writeToOut [] = TextIO.output(outstream, "[]")
+    | writeToOut(x::xs) = 
+        let 
+            
+            fun innerLists [] = nil
+            | innerLists (EQ :: ys) = TextIO.output(outstream, "EQ");
+        in
+            TextIO.output(outstream, "[");
+            innerLists x;
+            TextIO.output(outstream, "]");
+            writeToOut xs
+        end;
 
     (* MAIN STEP 4 *)
-    fun writeOut (outstream, result) = 
-        TextIO.output(outstream, result ^ "\n");
-    val result = strList(step3(step2(text)));
 in
     (* MAIN FUNCTION *)
     (* 1. read file (done in variables so file can be closed properly) *)
     (* 2. tokenise file, throw error if invalid character*)
     (* 3. change datatype to token *)
     (* 4. write to output file *)
-    writeOut(outstream, result)
+    step3(step2(text))
 end;
